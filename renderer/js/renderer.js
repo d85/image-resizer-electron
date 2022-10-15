@@ -32,6 +32,7 @@ function sendImage(e) {
 
   const width = widthInput.value
   const height = heightInput.value
+  const imgPath = img.files[0].path
 
   if (!img.files[0]) {
     alertError('Please upload an image')
@@ -42,7 +43,19 @@ function sendImage(e) {
     alertError('Plase fill in a height and width')
     return
   }
+
+  // Send to main using ipcRenderer
+  ipcRenderer.send('image:resize', {
+    imgPath,
+    width,
+    height
+  })
 }
+
+// Catch the image:done event
+ipcRenderer.on('image:done', () => {
+  alertSuccess(`Image resized to ${widthInput.value} x ${heightInput.value}`)
+})
 
 // Make sure file is image
 function isFileImage(file) {
